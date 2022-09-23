@@ -1,7 +1,8 @@
+import numpy as np
 
 def find_idx_match(simple_vertices, complex_vertices):
     '''
-    Thanks to juhuntenburg. 
+    Thanks to juhuntenburg.
     Functions taken from https://github.com/juhuntenburg/brainsurfacescripts
 
     Finds those points on the complex mesh that correspoind best to the
