@@ -1,5 +1,6 @@
 import numpy as np
 import numba
+from scipy.sparse import lil_matrix
 
 @numba.jit(parallel=True)
 def surf_keep_cortex(surf, cortex):
@@ -61,6 +62,12 @@ def recort(input_data, surf, cortex):
     data = np.zeros(len(surf[0]))
     data[cortex] = input_data
     return data
+
+def recort2d(input_data, surf, cortex):
+    n = len(surf[0])
+    data = lil_matrix((n,n), dtype=np.float32)
+    data[np.ix_(cortex, cortex)] = input_data
+    return data.tocsc()
 
 @numba.jit(parallel=True)
 def find_node_match(simple_vertices, complex_vertices):

@@ -1,6 +1,6 @@
 import gdist
 import numpy as np
-from .utils import surf_keep_cortex, translate_src, recort
+from .utils import surf_keep_cortex, translate_src, recort, recort2d
 from .load import load_freesurfer_label, get_freesurfer_label
 
 
@@ -16,6 +16,39 @@ def dist_calc(surf, cortex, source_nodes):
     translated_source_nodes = translate_src(source_nodes, cortex)
     data = gdist.compute_gdist(cortex_vertices, cortex_triangles, source_indices = translated_source_nodes)
     dist = recort(data, surf, cortex)
+    del data
+
+    return dist
+
+
+def dist_calc_pairwise(surf, cortex, maxdist):
+    """
+    Calculate exact pairwise geodesic distances between all nodes on cortical
+    surface.
+
+    Arguments
+    ---------
+    surf : (vertices, triangle) tuple
+        As returned by nibabel.freesurfer.read_geometry.
+
+    cortex : int ndarray
+        Sorted array of cortical vertices, as returned by
+        nibabel.freesurfer.read_label and then sorted.
+
+    maxdist : float
+        Maximum distance to search for. Large values will be computationally
+        expensive - it is recommended to choose a small value.
+
+    Returns
+    -------
+    dist : float32 csc_matrix
+        N*N sparse matrix giving pairwise geodesic distances (up to maxdist)
+        between nodes
+    """
+    cortex_vertices, cortex_triangles = surf_keep_cortex(surf, cortex)
+    data = gdist.local_gdist_matrix(cortex_vertices, cortex_triangles,
+                                    max_distance=maxdist).astype(np.float32)
+    dist = recort2d(data, surf, cortex)
     del data
 
     return dist
