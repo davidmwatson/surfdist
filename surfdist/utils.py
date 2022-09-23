@@ -2,7 +2,7 @@ import numpy as np
 import numba
 from scipy.sparse import lil_matrix
 
-@numba.jit(parallel=True)
+@numba.jit(forceobj=True, parallel=True)
 def surf_keep_cortex(surf, cortex):
     """
     Remove medial wall from cortical surface to ensure that shortest paths are only calculated through the cortex.
@@ -28,7 +28,7 @@ def surf_keep_cortex(surf, cortex):
 
     return cortex_vertices, cortex_triangles
 
-@numba.jit(parallel=True)
+@numba.jit(forceobj=True, parallel=True)
 def triangles_keep_cortex(triangles, cortex):
     """
     Remove triangles with nodes not contained in the cortex label array
